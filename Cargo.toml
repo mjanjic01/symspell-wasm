@@ -1,19 +1,21 @@
 [package]
-name = "symspell"
-version = "0.1.2"
+name = "symspell-wasm"
+version = "0.1.0"
 license = "MIT"
-authors = ["Rene Klacan <rene.klacan@gmail.com>"]
+authors = ["Matej Janjic <matej.janjic@productive.io>"]
 keywords = ["spellcheck"]
 description = "Spelling correction & Fuzzy search"
-homepage = "https://github.com/reneklacan/symspell"
-repository = "https://github.com/reneklacan/symspell"
+homepage = "https://github.com/mjanjic01/symspell-wasm"
+repository = "https://github.com/mjanjic01/symspell-wasm"
 exclude = [
     "data/*",
 ]
+
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
 strsim = "^0.9"
 unidecode = "^0.3"
 derive_builder = "^0.7"
-
-[dev-dependencies]
+wasm-bindgen = "0.2"
