@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+</head>
+
+<body>
+  <pre>
+      Test examples (cp/p in input):
+
+      whereis th elove hehad dated forImuch of thepast who couqdn'tread in sixthgrade and ins pired him
+
+      in te dhird qarter oflast jear he hadlearned ofca sekretplan
+
+      the bigjest playrs in te strogsommer film slatew ith plety of funn
+
+      Can yu readthis messa ge despite thehorible sppelingmsitakes
+    </pre>
+  <input type="file" name="File input" id="file-input">
+  <input type="text" name="Input" id="term-input">
+  <button type="button" id="check-button">Check</button>
+  <p id="log"></p>
+
+  <script type="module">
+    import init, { Spellchecker } from './pkg/symspell_wasm.js';
+
+    const $fileInput = document.getElementById('file-input');
+    const $termInput = document.getElementById('term-input');
+    const $checkButton = document.getElementById('check-button');
+    const $log = document.getElementById('log');
+
+    (async () => {
+      await init();
+
+      const spellchecker = new Spellchecker();
+      const reader = new FileReader();
+
+      $checkButton.addEventListener('click', () => {
+        const result = spellchecker.lookup_compound($termInput.value);
+        $log.innerText += `${result}\n`;
+      });
+
+
+      $fileInput.addEventListener('change', (ev) => {
+        const files = ev.target.files;
+        if (files.length > 0) {
+          reader.readAsText(files[0]);
+        }
+      });
+
+      reader.onload = (ev) => {
+        const text = ev.target.result;
+        if (spellchecker.load_dictionary(text)) {
+          $log.innerText += 'Loaded dictionary ✓\n';
+        };
+      };
+    })();
+  </script>
+</body>
+
+</html>

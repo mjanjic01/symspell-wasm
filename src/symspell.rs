@@ -94,6 +94,42 @@ impl<T: StringStrategy> SymSpell<T> {
         true
     }
 
+    /// Load multiple dictionary entries from a file of word/frequency count pairs.
+    ///
+    /// # Arguments
+    ///
+    /// * `input` - Full dictionary as a string.
+    /// * `term_index` - The column position of the word.
+    /// * `count_index` - The column position of the frequency count.
+    /// * `separator` - Separator between word and frequency
+    pub fn load_dictionary_from_string(
+        &mut self,
+        input: &str,
+        term_index: i64,
+        count_index: i64,
+        separator: &str,
+    ) -> bool {
+        for (i, line) in input.lines().enumerate() {
+            if i % 50_000 == 0 {
+                println!("progress: {}", i);
+            }
+            let line_str = line;
+            let line_parts: Vec<&str> = line_str.split(separator).collect();
+
+            if line_parts.len() >= 2 {
+                // let key = unidecode(line_parts[term_index as usize]);
+                let key = self
+                    .string_strategy
+                    .prepare(line_parts[term_index as usize]);
+                let count = line_parts[count_index as usize].parse::<i64>().unwrap();
+
+                self.create_dictionary_entry(key, count);
+            }
+        }
+
+        true
+    }
+
     /// Find suggested spellings for a given input word, using the maximum
     /// edit distance specified during construction of the SymSpell dictionary.
     ///
@@ -199,7 +235,7 @@ impl<T: StringStrategy> SymSpell<T> {
                         continue;
                     }
 
-                    let mut distance;
+                    let distance;
 
                     if candidate_len == 0 {
                         distance = cmp::max(input_len, suggestion_len);

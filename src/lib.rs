@@ -18,6 +18,7 @@ println!("{:?}", compound_suggestions);
 ```
 */
 
+extern crate wasm_bindgen;
 extern crate strsim;
 #[macro_use]
 extern crate derive_builder;
@@ -31,3 +32,27 @@ mod symspell;
 pub use string_strategy::{AsciiStringStrategy, StringStrategy, UnicodeiStringStrategy};
 pub use suggestion::Suggestion;
 pub use symspell::{SymSpell, SymSpellBuilder, Verbosity};
+
+use wasm_bindgen::prelude::*;
+
+
+#[wasm_bindgen]
+pub struct Spellchecker {
+    instance: SymSpell<AsciiStringStrategy>,
+}
+
+#[wasm_bindgen]
+impl Spellchecker {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Spellchecker {
+        Spellchecker { instance: SymSpell::default() }
+    }
+
+    pub fn load_dictionary(&mut self, dict: &str) -> bool {
+        return self.instance.load_dictionary_from_string(dict, 0, 1, " ");
+    }
+
+    pub fn lookup_compound(&mut self, term: &str) -> String {
+        return self.instance.lookup_compound(term, 2)[0].term.to_string();
+    }
+}
